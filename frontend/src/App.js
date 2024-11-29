@@ -18,22 +18,24 @@ const StartScreen = ({ onStart }) => (
 
 
 // Tela de jogo
-const GameScreen = ({ question, onAnswer }) => (
+const GameScreen = ({ question, onAnswer, score }) => (
   <div className="game-screen">
-      <h2>{question.pergunta}</h2>
-      <div>
-          {question.alternativas ? (
-              question.alternativas.map((alt, index) => (
-                  <button key={index} onClick={() => onAnswer(alt.label)}>
-                      {alt.label}: {alt.texto}
-                  </button>
-              ))
-          ) : (
-              <p>Carregando alternativas...</p>
-          )}
-      </div>
+    <h2>{question.pergunta}</h2>
+    <p>Pontuação atual: {score}</p> {/* Exibe a pontuação */}
+    <div>
+      {question.alternativas ? (
+        question.alternativas.map((alt, index) => (
+          <button key={index} onClick={() => onAnswer(alt.label)}>
+            {alt.label}: {alt.texto}
+          </button>
+        ))
+      ) : (
+        <p>Carregando alternativas...</p>
+      )}
+    </div>
   </div>
 );
+
 
 
 // Tela final
@@ -119,16 +121,16 @@ console.log("Pergunta selecionada (question):", question);
     <div className="app">
       {screen === "start" && <StartScreen onStart={startGame} />}
       {screen === "game" && (
-        <>
-          {loading ? (
-            <p>Carregando pergunta...</p>
-          ) : question ? (
-            <GameScreen question={question} onAnswer={handleAnswer} />
-          ) : (
-            <p>Erro ao carregar pergunta. Tente novamente.</p>
-          )}
-        </>
-      )}
+  <>
+    {loading ? (
+      <p>Carregando pergunta...</p>
+    ) : question ? (
+      <GameScreen question={question} onAnswer={handleAnswer} score={score} />
+    ) : (
+      <p>Erro ao carregar pergunta. Tente novamente.</p>
+    )}
+  </>
+)}
       {screen === "end" && <EndScreen score={score} onRestart={restartGame} />}
     </div>
   );
