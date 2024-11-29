@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import './App.css';
+import backgroundImage from './assets/A.png';
 
 // Tela inicial
+// Tela inicial
 const StartScreen = ({ onStart }) => (
-  <div className="start-screen">
-    <h1>Jogo do Milhão</h1>
+  <div
+    className="start-screen"
+    style={{ backgroundImage: `url(${backgroundImage})` }}
+  >
+    <h1>SHOW DO MILHÃO</h1>
     <button onClick={onStart}>Iniciar Jogo</button>
   </div>
 );
+
+
 
 // Tela de jogo
 const GameScreen = ({ question, onAnswer }) => (
