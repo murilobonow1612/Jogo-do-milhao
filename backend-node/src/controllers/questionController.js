@@ -19,7 +19,10 @@ db.connect(err => {
 
 // Rota para pegar uma pergunta aleatória
 exports.getQuestion = (req, res) => {
-  const query = 'SELECT * FROM perguntas ORDER BY RAND() LIMIT 1';
+  const query = `
+    SELECT * FROM perguntas 
+    ORDER BY FIELD(nivel, 'facil', 'medio', 'dificil'), pontos DESC 
+    LIMIT 1`;
   db.query(query, (err, results) => {
     if (err) return res.status(500).send(err);
     res.json(results[0]);  // Retorna a pergunta aleatória

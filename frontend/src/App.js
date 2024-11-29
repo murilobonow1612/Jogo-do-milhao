@@ -4,7 +4,6 @@ import './App.css';
 import backgroundImage from './assets/A.png';
 
 // Tela inicial
-// Tela inicial
 const StartScreen = ({ onStart }) => (
   <div
     className="start-screen"
@@ -14,8 +13,6 @@ const StartScreen = ({ onStart }) => (
     <button onClick={onStart}>Iniciar Jogo</button>
   </div>
 );
-
-
 
 // Tela de jogo
 const GameScreen = ({ question, onAnswer, score }) => (
@@ -35,8 +32,6 @@ const GameScreen = ({ question, onAnswer, score }) => (
     </div>
   </div>
 );
-
-
 
 // Tela final
 const EndScreen = ({ score, onRestart }) => (
@@ -62,6 +57,7 @@ const App = () => {
   // Buscar uma pergunta da API
   const fetchQuestion = async () => {
     try {
+        setLoading(true);  // Ativar o estado de carregamento
         console.log("Buscando pergunta...");
         const response = await axios.get("http://localhost:3001/api/questions");
         const randomQuestion = response.data[Math.floor(Math.random() * response.data.length)];
@@ -76,21 +72,21 @@ const App = () => {
                 { label: "D", texto: randomQuestion.alternativa_d }
             ],
             correta: randomQuestion.alternativa_correta,
-            id: randomQuestion.id
+            id: randomQuestion.id,
+            pontos: randomQuestion.pontos // Incluindo a pontuação da pergunta
         };
 
         console.log("Pergunta formatada:", formattedQuestion); // Debug
         setQuestion(formattedQuestion); // Atualiza o estado
+        setLoading(false);  // Desativar o estado de carregamento
     } catch (error) {
         console.error("Erro ao buscar pergunta:", error);
+        setLoading(false);  // Desativar o carregamento em caso de erro
     }
-};
+  };
 
-
-console.log("Estado question após fetch:");
-console.log("Pergunta selecionada (question):", question);
-
-
+  console.log("Estado question após fetch:");
+  console.log("Pergunta selecionada (question):", question);
 
   // Lidar com a resposta
   const handleAnswer = async (answer) => {
@@ -99,7 +95,7 @@ console.log("Pergunta selecionada (question):", question);
         const isCorrect = answer === question.correta; // Compara o rótulo selecionado com a correta
 
         if (isCorrect) {
-            setScore(score + 10); // Adicione a pontuação conforme necessário
+            setScore(score + question.pontos); // Adiciona a pontuação conforme o nível da pergunta
             fetchQuestion(); // Buscar nova pergunta
         } else {
             setScreen("end"); // Finaliza o jogo se a resposta for errada
@@ -107,8 +103,7 @@ console.log("Pergunta selecionada (question):", question);
     } catch (error) {
         console.error("Erro ao validar resposta:", error);
     }
-};
-
+  };
 
   // Reiniciar o jogo
   const restartGame = () => {
@@ -121,16 +116,16 @@ console.log("Pergunta selecionada (question):", question);
     <div className="app">
       {screen === "start" && <StartScreen onStart={startGame} />}
       {screen === "game" && (
-  <>
-    {loading ? (
-      <p>Carregando pergunta...</p>
-    ) : question ? (
-      <GameScreen question={question} onAnswer={handleAnswer} score={score} />
-    ) : (
-      <p>Erro ao carregar pergunta. Tente novamente.</p>
-    )}
-  </>
-)}
+        <>
+          {loading ? (
+            <p>Carregando pergunta...</p>
+          ) : question ? (
+            <GameScreen question={question} onAnswer={handleAnswer} score={score} />
+          ) : (
+            <p>Erro ao carregar pergunta. Tente novamente.</p>
+          )}
+        </>
+      )}
       {screen === "end" && <EndScreen score={score} onRestart={restartGame} />}
     </div>
   );
